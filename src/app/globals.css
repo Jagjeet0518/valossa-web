@@ -14,6 +14,10 @@
   --gradient: lineear-gradient(--accent-blue, --primary, --accent-yellow);
 }
 
+* {
+  transition: all 0.2s ease-in-out;
+}
+
 body {
   background: var(--dark);
   scroll-behavior: smooth;
