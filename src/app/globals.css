@@ -2,32 +2,37 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+/* pallete link */
+/* https://coolors.co/ba60f6-121212-4f97db-ead814-f1f1f1 */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
-  }
+:root {
+  --dark: #121212;
+  --light: #F1F1F1;
+  --primary: #BA60F6;
+  --accent-blue: #4F97DB;
+  --accent-yellow: #EAD814; 
+  --gradient: lineear-gradient(--accent-blue, --primary, --accent-yellow);
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+  background: var(--dark);
+  scroll-behavior: smooth;
+  max-width: 100dvw;
+  overflow-x: hidden;
+  color: white;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+body::-webkit-scrollbar {
+  width: 0;
 }
+
+.gradient {
+  background: linear-gradient(to right, var(--accent-blue), var(--primary), var(--accent-yellow));
+}
+
+.gradient-text {
+  background: linear-gradient(to right, var(--accent-blue), var(--primary), var(--accent-yellow));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
