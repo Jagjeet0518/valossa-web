@@ -1,5 +1,9 @@
 import { Urbanist } from "next/font/google";
+import { NextSSRPlugin } from "@uploadthing/react/next-ssr-plugin";
+import { extractRouterConfig } from "uploadthing/server";
+
 import "./globals.css";
+import { OurFileRouter } from "./api/uploadthing/core";
 
 const font = Urbanist({ subsets: ["latin"] });
 
@@ -11,7 +15,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={font.className}>{children}</body>
+      <body className={font.className}>
+      <NextSSRPlugin routerConfig={extractRouterConfig(OurFileRouter)} />
+        {children}</body>
     </html>
   );
 }
