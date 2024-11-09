@@ -2,16 +2,30 @@
 
 import { CircleCheck, CircleX, ScanEye } from "lucide-react";
 import { useEffect, useState } from "react";
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Button } from "./ui/button";
 
 const App = () => {
 
     const [video, setVideo] = useState(null);
     const [videoUrl, setVideoUrl] = useState(null);
     const [prompt, setPrompt] = useState("");
+    const [thumbPrompt, setThumbPrompt] = useState("");
     const [thumbResults, setThumbResults] = useState([]);
     const [selectedThumb, setSelectedThumb] = useState(null);
 
     const [uploadError, setUploadError] = useState(null);
+
+    const [finalDialogOpen, setFinalDialogOpen] = useState(false);
+    const [finalThumb, setFinalThumb] = useState(null);
 
     useEffect(() => {
         if (video) {
@@ -23,6 +37,16 @@ const App = () => {
 
     const handleThumbClick = (thumb) => {
         setSelectedThumb(prev => prev === thumb ? null : thumb);
+    }
+
+    const handleDownloadThumb = (thumb) => {
+        if (!thumb) return;
+        const link = document.createElement('a');
+        link.href = thumb;
+        link.download = "thumbnail.png";
+        link.click();
+        
+        link.remove();
     }
 
     const handleVideoChange = (e) => {
@@ -38,7 +62,6 @@ const App = () => {
             } else {
                 setUploadError(null);
                 setVideo(file);
-                console.log(file);
             }
         }
     }
@@ -74,6 +97,36 @@ const App = () => {
             console.error(error);
             setUploadError("An error occurred while generating thumbnails.");
         }
+    }
+
+    const handleGenThumb = () => {
+        if (!selectedThumb) return setUploadError("Please select a thumbnail to generate.");
+        setUploadError(null);
+
+        const generateThumb = async () => {
+            const response = await fetch("http://127.0.0.1:5000/generate", {
+                method: "POST",
+                body: JSON.stringify({
+                    prompt: thumbPrompt,
+                    image: thumbResults[selectedThumb].image,
+                    name: thumbResults[selectedThumb].name
+                })
+            })
+
+            if (response.ok) {
+                const data = await response.json();
+                if (data?.image) {
+                    setFinalThumb(data.image);
+                    setFinalDialogOpen(true);
+                } else {
+                    setUploadError("An error occurred while generating thumbnails.");
+                }
+            } else {
+                setUploadError("An error occurred while generating thumbnails.");
+            }
+        }
+
+        generateThumb();
     }
 
     return (
@@ -130,6 +183,30 @@ const App = () => {
                         <ThumbTile key={index} src={thumb?.image || null} selected={selectedThumb === index} onSelect={() => handleThumbClick(index)} />
                     ))}
                 </div>
+                {
+                    selectedThumb !== null && (<>
+                        <h4 className="text-lg text-neutral-100 font-medium mt-2">
+                            Thumbnail Prompt
+                        </h4>
+                        <input type="text" disabled={selectedThumb == null} placeholder="Enter thumbnail prompt here" className="w-full rounded-md border-neutral-700 border py-3 px-4 text-neutral-300 bg-transparent" onChange={(e) => setThumbPrompt(e.target.value)} />
+                        <button className="w-full rounded-md bg-blue-700 py-3 px-4 text-neutral-300 font-semibold hover:bg-blue-600 disabled:bg-neutral-700" onClick={() => handleGenThumb()} disabled={!thumbPrompt}>Generate Thumbnail</button>
+                        <Dialog open={finalDialogOpen} onOpenChange={setFinalDialogOpen}>
+                            <DialogContent>
+                                <DialogHeader>
+                                    <DialogTitle>Thumbnail Generated!</DialogTitle>
+                                    <DialogDescription>
+                                        Your thumbnail has been generated successfully.
+                                    </DialogDescription>
+                                </DialogHeader>
+                                <img src={finalThumb} alt="final-thumb" className="w-full h-full object-contain" />
+                                <DialogFooter>
+                                    <Button onClick={() => handleDownloadThumb(finalThumb)}>Download</Button>
+                                    <Button onClick={() => setFinalDialogOpen(false)}>Close</Button>
+                                </DialogFooter>
+                            </DialogContent>
+                        </Dialog>
+                    </>)
+                }
             </div>
         </div>
     )
