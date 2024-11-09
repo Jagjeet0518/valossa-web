@@ -48,7 +48,6 @@ const App = () => {
                             setUploadComplete(false)
                             setUploadError(null)
                         }}
-                        
                     />
                     {
                         uploadError &&
