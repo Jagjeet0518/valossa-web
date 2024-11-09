@@ -6,7 +6,7 @@ export const OurFileRouter = {
 	videoUploader: f({
 		video: {
 			maxFileCount: 1,
-			maxFileSize: "16MB",
+			maxFileSize: "64MB",
 		},
 	}).onUploadComplete(async ({ metadata, file }) => {
 		return { uploadedBy: metadata.userId };
