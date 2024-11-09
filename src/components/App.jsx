@@ -1,6 +1,6 @@
 "use client"
 
-import { UploadButton } from "@/lib/utils";
+import { UploadButton, UploadDropzone } from "@/lib/utils";
 import { CircleCheck, CircleX, ScanEye } from "lucide-react";
 import { useState } from "react";
 import { Progress } from "./ui/progress";
@@ -15,6 +15,7 @@ const App = () => {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [uploadComplete, setUploadComplete] = useState(false);
     const [uploadError, setUploadError] = useState(null);
+    const [uploadName, setUploadName] = useState("");
 
     const handleThumbClick = (thumb) => {
         setSelectedThumb(prev => prev === thumb ? null : thumb);
@@ -30,7 +31,14 @@ const App = () => {
                             <span>Upload complete!</span>
                         </div>
                     }
-                    <UploadButton
+                    <UploadDropzone
+                        // content={{
+                        //     button({ ready }) {
+                        //         if (ready) {
+                        //             return uploadName ? "Upload File" : "Select File"
+                        //         }
+                        //     },
+                        // }}
                         endpoint="videoUploader"
                         onClientUploadComplete={(res) => {
                             setVideo(res[0].url)
@@ -47,6 +55,11 @@ const App = () => {
                             setUploadProgress(0)
                             setUploadComplete(false)
                             setUploadError(null)
+                        }}
+                        onChange={(files) => {
+                            setUploadError(null)
+                            setUploadComplete(false)
+                            setUploadName(files[0].name)
                         }}
                     />
                     {
